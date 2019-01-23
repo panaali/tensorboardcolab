@@ -11,6 +11,7 @@ class TensorBoardColab:
         self.writer = None
         self.deep_writers = {}
         self.eager_execution = None
+        self.tensorboard_link = ''
         get_ipython().system_raw('npm i -s -q --unsafe-perm -g ngrok')  # sudo npm i -s -q --unsafe-perm -g ngrok
 
         setup_passed = False
@@ -30,6 +31,7 @@ class TensorBoardColab:
                     'curl -s http://localhost:4040/api/tunnels | python3 -c "import sys, json; print(json.load(sys.stdin))"')[
                     0]
                 tensorboard_link = eval(tensorboard_link)['tunnels'][0]['public_url']
+                self.tensorboard_link = tensorboard_link
                 setup_passed = True
             except:
                 setup_passed = False
