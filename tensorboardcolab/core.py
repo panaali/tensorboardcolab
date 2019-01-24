@@ -5,7 +5,7 @@ import os
 import io
 
 class TensorBoardColab:
-    def __init__(self, port=6006, graph_path='./Graph', startup_waiting_time=8):
+    def __init__(self, port=6006, graph_path='./Graph', startup_waiting_time=8, debugger_port=None):
         self.port = port
         self.graph_path = graph_path
         self.writer = None
@@ -22,7 +22,10 @@ class TensorBoardColab:
             # get_ipython().system_raw('rm -Rf ' + graph_path)
             print('Wait for %d seconds...' % startup_waiting_time)
             time.sleep(sleep_time)
-            get_ipython().system_raw('tensorboard --logdir %s --host 0.0.0.0 --port %d &' % (graph_path, port))
+            if debugger_port is not None:
+                get_ipython().system_raw('tensorboard --logdir %s --host 0.0.0.0 --port %d --debugger_port %d &' % (graph_path, port, debugger_port))
+            else:
+                get_ipython().system_raw('tensorboard --logdir %s --host 0.0.0.0 --port %d &' % (graph_path, port))
             time.sleep(sleep_time)
             get_ipython().system_raw('ngrok http %d &' % port)
             time.sleep(sleep_time)
