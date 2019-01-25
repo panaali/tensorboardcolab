@@ -8,12 +8,13 @@ from tensorboardcolab.core import TensorBoardColab
 
 
 class TensorBoardColab:
-    def __init__(self, port=6006, graph_path='./Graph', startup_waiting_time=8):
+    def __init__(self, port=6006, graph_path='./Graph', startup_waiting_time=8, debugger_port=None):
         self.port = port
         self.graph_path = graph_path
         self.writer = None
         self.deep_writers = {}
         self.eager_execution = None
+        self.tensorboard_link = ''
         get_ipython().system_raw('npm i -s -q --unsafe-perm -g ngrok')  # sudo npm i -s -q --unsafe-perm -g ngrok
 
         setup_passed = False
@@ -21,10 +22,13 @@ class TensorBoardColab:
         sleep_time = startup_waiting_time / 3.0
         while not setup_passed:
             get_ipython().system_raw('kill -9 $(sudo lsof -t -i:%d)' % port)
-            get_ipython().system_raw('rm -Rf ' + graph_path)
+            # get_ipython().system_raw('rm -Rf ' + graph_path)
             print('Wait for %d seconds...' % startup_waiting_time)
             time.sleep(sleep_time)
-            get_ipython().system_raw('tensorboard --logdir %s --host 0.0.0.0 --port %d &' % (graph_path, port))
+            if debugger_port is not None:
+                get_ipython().system_raw('tensorboard --logdir %s --host 0.0.0.0 --port %d --debugger_port %d &' % (graph_path, port, debugger_port))
+            else:
+                get_ipython().system_raw('tensorboard --logdir %s --host 0.0.0.0 --port %d &' % (graph_path, port))
             time.sleep(sleep_time)
             get_ipython().system_raw('ngrok http %d &' % port)
             time.sleep(sleep_time)
